@@ -13,11 +13,12 @@ def get_file_path():
         print("No file selected.")
     return file_path
 
-'''Enter APEX Setup Credentials'''
+'''Enter APEX Setup Credentials and environment'''
 username = "gwachtel@legacymotorclub.com"
 password = "Sarahapplejax@123"
+enviroment = 'prod'  #Options are dev, staging, prod
 
-trd_instance = Trd()
+trd_instance = Trd(enviroment)
 auth_payload = { 'username': username, 'password': password }
 token = trd_instance.get_apex_token(auth_payload)
 

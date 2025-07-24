@@ -5,11 +5,17 @@ import uuid
 
 
 class Trd:
-    def __init__(self):
+    def __init__(self, environment):
         self.redis_cache_url = "http://trdhydra.toyota.com/api/v1/chassis-tuner/lmc_cup_gen7/execution-plans/cache"
         self.hydra_auth_url = "https://trdhydra.toyota.com/api/v1/auth/login"
         self.apex_auth_url = "https://www.apex-mp.com/api/platform/login"
-        self.apex_direct_plan_url = "https://apex-setup.app.apex-mp.com/api/sim/direct_plan"
+        if environment == 'dev':
+            self.apex_direct_plan_url = "https://dev.apex-setup.app.apex-mp.com/api/sim/direct_plan"
+        elif environment == 'staging':
+             self.apex_direct_plan_url = "https://staging.apex-setup.app.apex-mp.com/api/sim/direct_plan"
+        elif environment == 'prod':
+            self.apex_direct_plan_url = "https://apex-setup.app.apex-mp.com/api/sim/direct_plan"
+    
     
     def get_hydra_token(self, auth_payload):
         headers = {
