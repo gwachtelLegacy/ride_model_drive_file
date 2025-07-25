@@ -11,10 +11,13 @@ class Trd:
         self.apex_auth_url = "https://www.apex-mp.com/api/platform/login"
         if environment == 'dev':
             self.apex_direct_plan_url = "https://dev.apex-setup.app.apex-mp.com/api/sim/direct_plan"
+            self.apex_s3_path = 'dev-193458d5-31cc-4255-bd20-fc513e21d9a2'
         elif environment == 'staging':
              self.apex_direct_plan_url = "https://staging.apex-setup.app.apex-mp.com/api/sim/direct_plan"
+             self.apex_s3_path = 'staging-193458d5-31cc-4255-bd20-fc513e21d9a2'
         elif environment == 'prod':
             self.apex_direct_plan_url = "https://apex-setup.app.apex-mp.com/api/sim/direct_plan"
+            self.apex_s3_path = 'prod-193458d5-31cc-4255-bd20-fc513e21d9a2'
     
     
     def get_hydra_token(self, auth_payload):
@@ -69,6 +72,29 @@ class Trd:
                 execution_plan = json.load(f)
             return execution_plan
     
+
+    def create_data_bridge(self, execution_plan, sim_output_dict, data_bridge_index):
+        data_bridge = {
+                    "module_name": "data-bridge",
+                    "module_type": "trd",
+                    "timeout": 120,
+                    "retries": 3,
+                    "module_data": {
+                        "export_points": {
+                            "all_outputs": sim_output_dict['all_outputs'],
+                            "units": sim_output_dict['units'],
+                            "segments": sim_output_dict['segments']
+                        },
+                        "s3_bucket": self.apex_s3_path,
+                        "s3_path": "data-bridge",
+                        "poll_interval": 2,
+                        "poll_timeout": 60
+                    }
+                }
+        execution_plan_with_data_bridge = execution_plan
+        execution_plan_with_data_bridge['data']['plan']['$sequence'].insert(data_bridge_index, data_bridge)
+
+        return execution_plan_with_data_bridge
 
     def hydra_cache_post(self, token, execution_plan):
         headers = {
